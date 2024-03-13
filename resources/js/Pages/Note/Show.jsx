@@ -1,5 +1,13 @@
+import NavLink from '@/Components/NavLink';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { Link } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import React from 'react';
+import NProgress from 'nprogress';
+
+router.on('start', () => NProgress.start());
+
+router.on('finish', () => NProgress.done());
 
 const Show = ({ auth, note }) => {
   return (
@@ -14,11 +22,11 @@ const Show = ({ auth, note }) => {
       <div className='note-container single-note my-60'>
         <div className='note-header'>
           <div>
-            <a
-              href="{{ route('note.index') }}"
-              className='note-edit-button mt-12 text-blue-400 p-4 flex items-center justify-center text-nowrap gap-2'
+            <Link
+              href={route('note.index')}
+              className='note-edit-button text-blue-400 p-4 inline-flex items-center justify-center text-nowrap gap-2 hover:text-blue-700'
             >
-              <div className='text-blue-400'>
+              <span>
                 <svg
                   version='1.1'
                   id='Capa_1'
@@ -42,18 +50,18 @@ const Show = ({ auth, note }) => {
                     </g>{' '}
                   </g>
                 </svg>{' '}
-              </div>
+              </span>
               Go back
-            </a>
+            </Link>
           </div>
           <h1 className='text-xl py-4 text-black'>Note: {note.created_at}</h1>
           <div className='note-buttons'>
-            <a
-              href="{{ route('note.edit', $note) }}"
+            <NavLink
+              href={route('note.edit', { note: note })}
               className='note-edit-button'
             >
               Edit
-            </a>
+            </NavLink>
             <form action="{{ route('note.destroy', $note) }}" method='POST'>
               {/* @csrf */}
               {/* @method('DELETE') */}

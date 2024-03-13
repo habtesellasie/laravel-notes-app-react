@@ -35,7 +35,18 @@ class NoteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // ddd($request);
+        $data = $request->validate([
+            'note_title' => 'required',
+            'note' => 'required|min:5'
+        ]);
+        $data['user_id'] = $request->user()->id;
+
+        $note = Note::create($data);
+
+        return Inertia::render('Note/Index', [
+            // 'note' => $note
+        ]);
     }
 
     /**
@@ -57,7 +68,9 @@ class NoteController extends Controller
      */
     public function edit(Note $note)
     {
-        //
+        return Inertia::render('Note/Edit', [
+            'note' => $note
+        ]);
     }
 
     /**
@@ -65,7 +78,19 @@ class NoteController extends Controller
      */
     public function update(Request $request, Note $note)
     {
-        //
+        $data = $request->validate([
+            'note_title' => 'required',
+            'note' => 'required|min:5'
+        ]);
+        // $data['user_id'] = $request->user()->id;
+
+        $note->update($data);
+
+        $note = Note::find($note->id);
+
+        return Inertia::render('Note/Show', [
+            'note' => $note
+        ]);
     }
 
     /**
@@ -73,6 +98,8 @@ class NoteController extends Controller
      */
     public function destroy(Note $note)
     {
-        //
+        $note->delete();
+
+        return Inertia::render('Note/Index');
     }
 }

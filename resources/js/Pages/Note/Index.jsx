@@ -1,11 +1,31 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import NavLink from '@/Components/NavLink';
-// import { route } from 'ziggy-js';
+import { router } from '@inertiajs/react';
+import NProgress from 'nprogress';
+
+router.on('start', () => NProgress.start());
+
+router.on('finish', () => NProgress.done());
 
 const Index = ({ auth, notes }) => {
-  console.log(notes);
+  const { delete: delNote } = useForm();
+
+  const deleteNote = (e, note) => {
+    e.preventDefault();
+
+    if (confirm('Are you sure you want to delete this note?')) {
+      delNote(route('note.destroy', { note: note.id }), {
+        onSuccess: () => {
+          // handle success, e.g. redirect to another page
+        },
+        onError: (errors) => {
+          // handle error
+        },
+      });
+    }
+  };
   return (
     <AuthenticatedLayout
       user={auth.user}
@@ -17,14 +37,13 @@ const Index = ({ auth, notes }) => {
     >
       <Head title='Notes' />
       <div className='note-container py-12'>
-        <a href="{{ route('note.create') }}" className='new-note-btn'>
+        <NavLink href={route('note.create')} className='new-note-btn'>
           +
-        </a>
-        <Link href={route('note.create')}>+</Link>
+        </NavLink>
         <div className='notes'>
           {notes.data.map((note) => {
             return (
-              <div className='note'>
+              <div className='note' key={note.note_title}>
                 <div className='note-body'>
                   {/* {{ Str::words($note->note, 30) }} */}
                   <h2 className='underline font-bold'>{note.note_title}</h2>
@@ -44,10 +63,7 @@ const Index = ({ auth, notes }) => {
                   >
                     Edit
                   </NavLink>
-                  <form
-                    action="{{ route('note.destroy', $note) }}"
-                    method='POST'
-                  >
+                  <form onSubmit={(e) => deleteNote(e, note)} method='POST'>
                     {/* @csrf */}
                     {/* @method('DELETE') */}
                     <button className='note-delete-button'>Delete</button>
