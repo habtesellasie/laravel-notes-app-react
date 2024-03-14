@@ -17,7 +17,10 @@ class NoteController extends Controller
             ->where('user_id', request()->user()->id)
             ->orderBy('created_at', 'desc')->paginate(6);
 
-        return Inertia::render('Note/Index', [
+        // return Inertia::render('Note/Index', [
+        //     'notes' => $notes
+        // ]);
+        return inertia('Note/Index', [
             'notes' => $notes
         ]);
     }
@@ -44,9 +47,11 @@ class NoteController extends Controller
 
         $note = Note::create($data);
 
-        return Inertia::render('Note/Index', [
-            // 'note' => $note
-        ]);
+        // return Inertia::render('Note/Index', [
+        //     // 'note' => $note
+        // ]);
+
+        return to_route('note.index');
     }
 
     /**
@@ -54,9 +59,11 @@ class NoteController extends Controller
      */
     public function show(Note $note)
     {
-        // if ($note->user_id !== request()->user()->id) {
-        //     abort(403);
-        // }
+
+        if ($note->user_id !== request()->user()->id) {
+            return inertia('NotFound');
+            abort(403);
+        }
 
         return Inertia::render('Note/Show', [
             'note' => $note
@@ -68,6 +75,10 @@ class NoteController extends Controller
      */
     public function edit(Note $note)
     {
+        if ($note->user_id !== request()->user()->id) {
+            abort(403);
+            return inertia('NotFound');
+        }
         return Inertia::render('Note/Edit', [
             'note' => $note
         ]);
@@ -78,6 +89,11 @@ class NoteController extends Controller
      */
     public function update(Request $request, Note $note)
     {
+        if ($note->user_id !== request()->user()->id) {
+            abort(403);
+            return inertia('NotFound');
+        }
+
         $data = $request->validate([
             'note_title' => 'required',
             'note' => 'required|min:5'
@@ -88,7 +104,12 @@ class NoteController extends Controller
 
         $note = Note::find($note->id);
 
-        return Inertia::render('Note/Show', [
+        // return Inertia::render('Note/Show', [
+        //     'note' => $note
+        // ]);
+
+        return to_route('note.show', [
+
             'note' => $note
         ]);
     }
@@ -98,8 +119,13 @@ class NoteController extends Controller
      */
     public function destroy(Note $note)
     {
-        $note->delete();
+        if ($note->user_id !== request()->user()->id) {
+            abort(403);
+            return inertia('NotFound');
+        }
 
-        return Inertia::render('Note/Index');
+        $note->delete();
+        // return Inertia::render('Note/Index');
+        return to_route('note.index');
     }
 }

@@ -10,6 +10,9 @@ router.on('start', () => NProgress.start());
 router.on('finish', () => NProgress.done());
 
 const Show = ({ auth, note }) => {
+  const deleteNote = (note) => {
+    router.delete(route('note.destroy', note.id));
+  };
   return (
     <AuthenticatedLayout
       user={auth.user}
@@ -62,11 +65,13 @@ const Show = ({ auth, note }) => {
             >
               Edit
             </NavLink>
-            <form action="{{ route('note.destroy', $note) }}" method='POST'>
-              {/* @csrf */}
-              {/* @method('DELETE') */}
-              <button className='note-delete-button'>Delete</button>
-            </form>
+
+            <button
+              onClick={(e) => deleteNote(note)}
+              className='note-delete-button'
+            >
+              Delete
+            </button>
           </div>
         </div>
         <div className='note'>

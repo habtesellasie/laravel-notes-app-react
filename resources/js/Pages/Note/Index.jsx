@@ -2,7 +2,7 @@ import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import NavLink from '@/Components/NavLink';
-import { router } from '@inertiajs/react';
+import { router, Link } from '@inertiajs/react';
 import NProgress from 'nprogress';
 
 router.on('start', () => NProgress.start());
@@ -10,22 +10,12 @@ router.on('start', () => NProgress.start());
 router.on('finish', () => NProgress.done());
 
 const Index = ({ auth, notes }) => {
-  const { delete: delNote } = useForm();
-
-  const deleteNote = (e, note) => {
-    e.preventDefault();
-
+  const deleteNote = (note) => {
     if (confirm('Are you sure you want to delete this note?')) {
-      delNote(route('note.destroy', { note: note.id }), {
-        onSuccess: () => {
-          // handle success, e.g. redirect to another page
-        },
-        onError: (errors) => {
-          // handle error
-        },
-      });
+      router.delete(route('note.destroy', note.id));
     }
   };
+
   return (
     <AuthenticatedLayout
       user={auth.user}
@@ -63,11 +53,17 @@ const Index = ({ auth, notes }) => {
                   >
                     Edit
                   </NavLink>
-                  <form onSubmit={(e) => deleteNote(e, note)} method='POST'>
-                    {/* @csrf */}
-                    {/* @method('DELETE') */}
-                    <button className='note-delete-button'>Delete</button>
-                  </form>
+
+                  {/* <form onSubmit={(e) => deleteNote(e, note)} method='POST'> */}
+                  {/* @csrf */}
+                  {/* @method('DELETE') */}
+                  <button
+                    className='note-delete-button'
+                    onClick={(e) => deleteNote(note)}
+                  >
+                    Delete
+                  </button>
+                  {/* </form> */}
                 </div>
               </div>
             );
@@ -75,7 +71,23 @@ const Index = ({ auth, notes }) => {
         </div>
 
         <div className='p-6'>{/* {{ $notes->links() }} */}</div>
-        <div className='p-6'>{notes.data.links}</div>
+        <nav className='text-center mt-4'>
+          {notes.links.map((link) => (
+            <Link
+              preserveScroll
+              href={link.url || ''}
+              key={link.label}
+              className={
+                'inline-block py-2 px-3 rounded-lg text-gray-800 text-xs ' +
+                (link.active ? 'bg-yellow-400 ' : ' ') +
+                (!link.url
+                  ? '!text-gray-800 cursor-not-allowed '
+                  : 'hover:bg-yellow-400')
+              }
+              dangerouslySetInnerHTML={{ __html: link.label }}
+            ></Link>
+          ))}
+        </nav>
       </div>
     </AuthenticatedLayout>
   );

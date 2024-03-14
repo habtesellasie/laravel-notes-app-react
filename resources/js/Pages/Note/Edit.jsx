@@ -54,14 +54,14 @@ const Edit = ({ auth, note }) => {
       }
     >
       <div className='note-container single-note'>
-        <form onSubmit={submit} className='note mt-10'>
+        <form onSubmit={submit} className='mt-10'>
           {/* @csrf */}
 
           <input
             placeholder='Enter your title note here'
             type='text'
             name='note_title'
-            className=''
+            className='w-full bg-[#f4ce44] border-none mb-4 rounded-sm font-bold'
             ref={noteTitleRef}
             defaultValue={note.note_title}
             onChange={(e) => setData('note_title', e.target.value)}
@@ -70,7 +70,7 @@ const Edit = ({ auth, note }) => {
             ref={noteRef}
             name='note'
             rows='10'
-            className='note-body'
+            className='note-body note'
             defaultValue={note.note}
             onChange={(e) => setData('note', e.target.value)}
             placeholder='Enter your note here'
