@@ -6,7 +6,6 @@ import { router, Link } from '@inertiajs/react';
 import NProgress from 'nprogress';
 
 router.on('start', () => NProgress.start());
-
 router.on('finish', () => NProgress.done());
 
 const Index = ({ auth, notes }) => {
